@@ -1,0 +1,227 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RestaurantSystem.ViewModels"
+             xmlns:c="using:RestaurantSystem.Controls"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel"
+             Classes="page">
+
+    <ScrollViewer>
+        <StackPanel Spacing="18" Margin="0,0,6,0">
+
+            <!-- KPI -->
+            <ItemsControl ItemsSource="{Binding Kpis}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:KpiCard">
+                        <Border Classes="card glow" Margin="0,0,14,0" Padding="20,18">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Border Classes="iconBubble" Background="{Binding ToneSoft}">
+                                        <mi:MaterialIcon Kind="{Binding Icon}" Foreground="{Binding Tone}" Width="21" Height="21" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Title}" Classes="muted" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="12,0,0,0" TextWrapping="Wrap" />
+                                </Grid>
+                                <TextBlock Text="{Binding Value}" Classes="value" />
+                                <TextBlock Text="{Binding Caption}" Foreground="{Binding CaptionTone}" FontSize="12"
+                                           FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Графіки -->
+            <Grid ColumnDefinitions="2*,14,*">
+                <Border Classes="card">
+                    <Grid RowDefinitions="Auto,*">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="Виручка за 14 днів" Classes="h2" />
+                                <TextBlock Text="Наведіть курсор на стовпчик, щоб побачити суму" Classes="dim small" Margin="0,3,0,0" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding Revenue14Text}" FontSize="22" FontWeight="ExtraBold"
+                                       Classes="accent" VerticalAlignment="Center" />
+                        </Grid>
+                        <c:BarChart Grid.Row="1" Points="{Binding RevenueChart}" Height="250" Margin="0,10,0,0" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Classes="card">
+                    <StackPanel>
+                        <TextBlock Text="Структура продажів" Classes="h2" />
+                        <TextBlock Text="Частка категорій за 30 днів" Classes="dim small" Margin="0,3,0,0" />
+                        <c:DonutChart Segments="{Binding CategorySegments}" CenterTitle="виручка за 30 днів"
+                                      CenterValue="{Binding CategoryTotalText}" Thickness="24"
+                                      Width="232" Height="232" Margin="0,18,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Нижній ряд -->
+            <Grid ColumnDefinitions="*,14,*,14,*">
+
+                <!-- Топ страв -->
+                <Border Classes="card">
+                    <StackPanel Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Хіти продажів" Classes="h2" />
+                            <TextBlock Grid.Column="1" Text="30 днів" Classes="dim small" VerticalAlignment="Center" />
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding TopDishes}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="14" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:RankedRow">
+                                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto">
+                                        <TextBlock Grid.RowSpan="2" Text="{Binding Rank}" Classes="mono" FontSize="18"
+                                                   FontWeight="Bold" Foreground="{StaticResource TextDimBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Value}" Classes="muted small" Margin="8,0,0,0" />
+                                        <c:LevelMeter Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Value="{Binding Ratio}"
+                                                      Fill="{StaticResource FlameBrush}" Margin="0,7,0,0" Height="5" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Кухня зараз + бронювання -->
+                <Border Grid.Column="2" Classes="card">
+                    <StackPanel Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Кухня зараз" Classes="h2" />
+                            <Button Grid.Column="1" Classes="ghost small" Padding="8,4" Command="{Binding OpenKitchenCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="Відкрити" FontSize="12" Foreground="{Binding $parent[Button].Foreground}" />
+                                    <mi:MaterialIcon Kind="ChevronRight" Width="16" Height="16" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        <UniformGrid Columns="3">
+                            <Border Classes="panel" Margin="0,0,5,0" Background="{StaticResource BlueSoftBrush}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding KitchenNew}" FontSize="26" FontWeight="ExtraBold"
+                                               Foreground="{StaticResource BlueBrush}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="нові" Classes="muted small" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="panel" Margin="5,0" Background="{StaticResource AccentSoftBrush}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding KitchenCooking}" FontSize="26" FontWeight="ExtraBold"
+                                               Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="готуються" Classes="muted small" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="panel" Margin="5,0,0,0" Background="{StaticResource GreenSoftBrush}">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding KitchenReady}" FontSize="26" FontWeight="ExtraBold"
+                                               Foreground="{StaticResource GreenBrush}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="готові" Classes="muted small" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+                            <TextBlock Text="Найближчі бронювання" Classes="h3" />
+                            <Button Grid.Column="1" Classes="ghost icon small" Command="{Binding OpenReservationsCommand}">
+                                <mi:MaterialIcon Kind="ChevronRight" />
+                            </Button>
+                        </Grid>
+                        <TextBlock Text="Сьогодні бронювань більше немає" Classes="dim small"
+                                   IsVisible="{Binding !HasReservations}" />
+                        <ItemsControl ItemsSource="{Binding UpcomingReservations}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="10" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:RankedRow">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Border Background="{StaticResource BlueSoftBrush}" CornerRadius="10" Padding="8,5"
+                                                VerticalAlignment="Center" MinWidth="62">
+                                            <TextBlock Text="{Binding Value}" Foreground="{StaticResource BlueBrush}"
+                                                       FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Subtitle}" Classes="dim small" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Склад -->
+                <Border Grid.Column="4" Classes="card">
+                    <StackPanel Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Увага: склад" Classes="h2" />
+                            <Button Grid.Column="1" Classes="ghost icon small" Command="{Binding OpenInventoryCommand}">
+                                <mi:MaterialIcon Kind="ChevronRight" />
+                            </Button>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding !HasLowStock}">
+                            <mi:MaterialIcon Kind="CheckCircleOutline" Foreground="{StaticResource GreenBrush}" />
+                            <TextBlock Text="Усіх продуктів достатньо" Classes="muted" />
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding LowStock}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="10" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:AlertRow">
+                                    <Border Background="{Binding ToneSoft}" CornerRadius="12" Padding="12,10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <mi:MaterialIcon Kind="{Binding Icon}" Foreground="{Binding Tone}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold"
+                                                       Margin="10,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Grid.Column="2" Text="{Binding Value}" Foreground="{Binding Tone}"
+                                                       FontWeight="Bold" FontSize="12" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Навантаження по годинах -->
+            <Border Classes="card">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel>
+                            <TextBlock Text="Пікові години" Classes="h2" />
+                            <TextBlock Text="Кількість чеків за годинами відкриття (30 днів) — допомагає планувати зміни"
+                                       Classes="dim small" Margin="0,3,0,0" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="soft" Command="{Binding OpenHallCommand}" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <mi:MaterialIcon Kind="TableFurniture" />
+                                <TextBlock Text="План зали" Foreground="{Binding $parent[Button].Foreground}" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <c:BarChart Grid.Row="1" Points="{Binding HourlyChart}" HighlightLast="False" Height="190" Margin="0,8,0,0" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

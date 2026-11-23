@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="using:RestaurantSystem.ViewModels.Dialogs"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.Dialogs.PaymentDialogView"
+             x:DataType="d:PaymentDialogViewModel">
+    <UserControl.Styles>
+        <Style Selector="Button.method">
+            <Setter Property="Height" Value="78" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Background" Value="{StaticResource Surface2Brush}" />
+        </Style>
+        <Style Selector="Button.method.active">
+            <Setter Property="Background" Value="#24F2A65A" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+            <Setter Property="BorderThickness" Value="1.5" />
+        </Style>
+        <Style Selector="Button.method.active mi|MaterialIcon">
+            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Classes="card" Width="520" Padding="30" BoxShadow="0 30 80 0 #99000000">
+        <StackPanel Spacing="0">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel>
+                    <TextBlock Text="Розрахунок" Classes="h1" />
+                    <TextBlock Classes="muted" Margin="0,4,0,0">
+                        <Run Text="{Binding TableText}" />
+                        <Run Text="·" />
+                        <Run Text="{Binding PositionsText}" />
+                    </TextBlock>
+                </StackPanel>
+                <Button Grid.Column="1" Classes="ghost icon" Command="{Binding CancelCommand}" VerticalAlignment="Top">
+                    <mi:MaterialIcon Kind="Close" />
+                </Button>
+            </Grid>
+
+            <!-- Сума -->
+            <Border Margin="0,22,0,0" CornerRadius="18" Padding="22,18" Background="{StaticResource CardGlowBrush}"
+                    BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                    <TextBlock Text="Сума замовлення" Classes="muted" />
+                    <TextBlock Grid.Column="1" Text="{Binding SubtotalText}" Classes="mono" HorizontalAlignment="Right" />
+                    <TextBlock Grid.Row="1" Text="Знижка" Classes="muted" Margin="0,6,0,0" IsVisible="{Binding HasDiscount}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DiscountText}" Classes="mono"
+                               Foreground="{StaticResource GreenBrush}" Margin="0,6,0,0" IsVisible="{Binding HasDiscount}"
+                               HorizontalAlignment="Right" />
+                    <TextBlock Grid.Row="2" Text="До сплати" FontWeight="Bold" FontSize="16" VerticalAlignment="Bottom"
+                               Margin="0,12,0,0" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding TotalText}" FontSize="32" FontWeight="ExtraBold"
+                               Foreground="{StaticResource AccentBrush}" Margin="0,8,0,0" HorizontalAlignment="Right" />
+                </Grid>
+            </Border>
+
+            <!-- Знижка -->
+            <TextBlock Text="ЗНИЖКА" Classes="caption" Margin="2,22,0,10" />
+            <ItemsControl ItemsSource="{Binding DiscountOptions}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="5" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="d:DiscountOption">
+                        <Button Classes="chip" Classes.active="{Binding IsSelected}" Content="{Binding Text}"
+                                Command="{Binding SelectCommand}" Margin="3" HorizontalAlignment="Stretch" Padding="6,9" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Спосіб оплати -->
+            <TextBlock Text="СПОСІБ ОПЛАТИ" Classes="caption" Margin="2,22,0,10" />
+            <UniformGrid Columns="2">
+                <Button Classes="method" Classes.active="{Binding IsCash}" Command="{Binding UseCashCommand}" Margin="0,0,6,0">
+                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="CashMultiple" Width="26" Height="26" />
+                        <TextBlock Text="Готівка" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Classes="method" Classes.active="{Binding IsCard}" Command="{Binding UseCardCommand}" Margin="6,0,0,0">
+                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="CreditCardChipOutline" Width="26" Height="26" />
+                        <TextBlock Text="Картка / NFC" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </UniformGrid>
+
+            <!-- Готівка: решта -->
+            <Grid ColumnDefinitions="*,12,*" Margin="0,18,0,0" IsVisible="{Binding IsCash}">
+                <StackPanel>
+                    <TextBlock Text="Отримано від гостя, ₴" Classes="label" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <NumericUpDown Value="{Binding Received}" Minimum="0" Increment="50" FormatString="0.##"
+                                       ShowButtonSpinner="False" Watermark="0" />
+                        <Button Grid.Column="1" Classes="soft" Content="Без решти" Margin="8,0,0,0"
+                                Command="{Binding ExactAmountCommand}" />
+                    </Grid>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Решта" Classes="label" />
+                    <Border Classes="panel" Height="42" Padding="14,0">
+                        <TextBlock Text="{Binding ChangeText}" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <Button Classes="primary" Height="52" HorizontalAlignment="Stretch" Margin="0,26,0,0"
+                    Command="{Binding ConfirmCommand}" IsEnabled="{Binding CanPay}" IsDefault="True">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <mi:MaterialIcon Kind="CheckDecagram" Foreground="{StaticResource OnAccentBrush}" />
+                    <TextBlock Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold" FontSize="15">
+                        <Run Text="Прийняти оплату" />
+                        <Run Text="{Binding TotalText}" />
+                    </TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Border>
+</UserControl>

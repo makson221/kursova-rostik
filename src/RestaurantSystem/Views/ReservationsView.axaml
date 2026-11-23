@@ -1,0 +1,227 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RestaurantSystem.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.ReservationsView"
+             x:DataType="vm:ReservationsViewModel"
+             Classes="page">
+
+    <UserControl.Styles>
+        <Style Selector="Button.day">
+            <Setter Property="Width" Value="66" />
+            <Setter Property="Height" Value="108" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeSoftBrush}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Button.day.active">
+            <Setter Property="Background" Value="{StaticResource FlameBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.day.active TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource OnAccentBrush}" />
+        </Style>
+        <Style Selector="Button.day.active Border.dot">
+            <Setter Property="Background" Value="{StaticResource OnAccentBrush}" />
+        </Style>
+        <Style Selector="Button.day.active Border.dot > TextBlock">
+            <Setter Property="Foreground" Value="#FFC977" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="*,18,380">
+        <Grid RowDefinitions="Auto,Auto,*">
+            <!-- Стрічка днів -->
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,8">
+                <ItemsControl ItemsSource="{Binding Days}" Margin="0,0,0,12">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DayChip">
+                            <Button Classes="day" Classes.active="{Binding IsSelected}" Command="{Binding SelectCommand}">
+                                <Panel>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,9,0,0" Spacing="0">
+                                        <TextBlock Text="{Binding DayName}" FontSize="10.5" FontWeight="Bold" Classes="muted"
+                                                   HorizontalAlignment="Center" />
+                                        <TextBlock Text="{Binding DayNumber}" FontSize="24" FontWeight="ExtraBold"
+                                                   HorizontalAlignment="Center" />
+                                        <TextBlock Text="{Binding MonthName}" FontSize="10.5" Classes="muted"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                    <Border Classes="dot" Background="{StaticResource BlueBrush}" CornerRadius="8" MinWidth="16"
+                                            Height="16" Padding="5,0" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                            Margin="0,0,0,7" IsVisible="{Binding HasCount}">
+                                        <TextBlock Text="{Binding Count}" FontSize="10" FontWeight="ExtraBold"
+                                                   Foreground="{StaticResource Bg0Brush}" HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                </Panel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="1" Margin="4,0,0,14">
+                <TextBlock Text="{Binding SelectedDateText}" Classes="h2" FontSize="20" />
+                <TextBlock Text="{Binding DaySummary}" Classes="muted" Margin="0,3,0,0" />
+            </StackPanel>
+
+            <!-- Порожній день -->
+            <Border Grid.Row="2" Classes="card" IsVisible="{Binding IsDayEmpty}" VerticalAlignment="Top" Padding="30">
+                <StackPanel HorizontalAlignment="Center" Spacing="10">
+                    <mi:MaterialIcon Kind="CalendarBlankOutline" Width="44" Height="44" Foreground="{StaticResource TextDimBrush}" />
+                    <TextBlock Text="На цей день бронювань немає" Classes="h3" HorizontalAlignment="Center" />
+                    <TextBlock Text="Заповніть форму праворуч, щоб забронювати стіл" Classes="muted small" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- Таймлайн -->
+            <ScrollViewer Grid.Row="2">
+                <ItemsControl ItemsSource="{Binding Cards}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ReservationCard">
+                            <Grid ColumnDefinitions="74,30,*" Margin="0,0,0,12">
+                                <StackPanel HorizontalAlignment="Right" Margin="0,14,0,0">
+                                    <TextBlock Text="{Binding TimeText}" Classes="mono" FontSize="18" FontWeight="Bold"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Text="{Binding EndText}" Classes="dim small" HorizontalAlignment="Right" />
+                                </StackPanel>
+                                <Panel Grid.Column="1">
+                                    <Border Width="2" Background="{StaticResource StrokeBrush}" HorizontalAlignment="Center"
+                                            Margin="0,0,0,-12" />
+                                    <Border Width="14" Height="14" CornerRadius="7" Background="{Binding Tone}"
+                                            BorderBrush="{StaticResource Bg0Brush}" BorderThickness="3"
+                                            VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,20,0,0" />
+                                </Panel>
+                                <Border Grid.Column="2" Classes="card" Padding="18,14">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Spacing="6">
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="{Binding GuestName}" FontWeight="Bold" FontSize="15" />
+                                                <Border Classes="badge" Background="{Binding ToneSoft}">
+                                                    <TextBlock Text="{Binding StatusText}" Foreground="{Binding Tone}" />
+                                                </Border>
+                                            </StackPanel>
+                                            <WrapPanel>
+                                                <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,16,0">
+                                                    <mi:MaterialIcon Kind="TableFurniture" Width="15" Height="15" Foreground="{StaticResource TextMutedBrush}" />
+                                                    <TextBlock Text="{Binding TableText}" Classes="muted small" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,16,0">
+                                                    <mi:MaterialIcon Kind="AccountMultipleOutline" Width="15" Height="15" Foreground="{StaticResource TextMutedBrush}" />
+                                                    <TextBlock Text="{Binding GuestsText}" Classes="muted small" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <mi:MaterialIcon Kind="PhoneOutline" Width="15" Height="15" Foreground="{StaticResource TextMutedBrush}" />
+                                                    <TextBlock Text="{Binding Phone}" Classes="muted small" />
+                                                </StackPanel>
+                                            </WrapPanel>
+                                            <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding HasNote}">
+                                                <mi:MaterialIcon Kind="CommentTextOutline" Width="15" Height="15" Foreground="{StaticResource YellowBrush}" />
+                                                <TextBlock Text="{Binding Note}" Foreground="{StaticResource YellowBrush}" FontSize="12.5"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+                                                    IsVisible="{Binding IsActive}">
+                                            <Button Classes="success" Padding="12,8" Command="{Binding ArrivedCommand}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <mi:MaterialIcon Kind="AccountCheckOutline" Width="16" Height="16" />
+                                                    <TextBlock Text="Прийшли" Foreground="{Binding $parent[Button].Foreground}" />
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Classes="icon" Command="{Binding EditCommand}" ToolTip.Tip="Редагувати">
+                                                <mi:MaterialIcon Kind="PencilOutline" />
+                                            </Button>
+                                            <Button Classes="danger icon" Command="{Binding CancelCommand}" ToolTip.Tip="Скасувати">
+                                                <mi:MaterialIcon Kind="CalendarRemoveOutline" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ================= Форма ================= -->
+        <Border Grid.Column="2" Classes="card" Padding="22,20">
+            <ScrollViewer>
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel>
+                            <TextBlock Text="{Binding FormTitle}" Classes="h2" />
+                            <TextBlock Text="{Binding SelectedDateText}" Classes="accent small" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="ghost" Padding="10,6" Command="{Binding ResetFormCommand}"
+                                IsVisible="{Binding IsEditing}">
+                            <TextBlock Text="Скасувати" Foreground="{Binding $parent[Button].Foreground}" FontSize="12" />
+                        </Button>
+                    </Grid>
+
+                    <StackPanel>
+                        <TextBlock Text="Ім'я гостя" Classes="label" />
+                        <TextBox Text="{Binding GuestName}" Watermark="Як до вас звертатися?" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Телефон" Classes="label" />
+                        <TextBox Text="{Binding Phone}" Watermark="+380 __ ___ __ __" />
+                    </StackPanel>
+                    <Grid ColumnDefinitions="*,10,*">
+                        <StackPanel>
+                            <TextBlock Text="Гостей" Classes="label" />
+                            <NumericUpDown Value="{Binding Guests}" Minimum="1" Maximum="20" Increment="1" FormatString="0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Час" Classes="label" />
+                            <ComboBox ItemsSource="{Binding TimeSlots}" SelectedItem="{Binding Time}" MaxDropDownHeight="260" />
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel>
+                        <TextBlock Text="Тривалість" Classes="label" />
+                        <ComboBox ItemsSource="{Binding Durations}" SelectedItem="{Binding Duration}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:DurationOption">
+                                    <TextBlock Text="{Binding Title}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Стіл (за місткістю)" Classes="label" />
+                        <ComboBox ItemsSource="{Binding TableOptions}" SelectedItem="{Binding Table}" MaxDropDownHeight="300">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TableOption">
+                                    <TextBlock Text="{Binding Title}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Побажання" Classes="label" />
+                        <TextBox Classes="multiline" Text="{Binding Note}" Watermark="Свято, дитячий стілець, місце біля вікна…" />
+                    </StackPanel>
+
+                    <Button Classes="primary" Height="48" HorizontalAlignment="Stretch" Command="{Binding SaveCommand}" Margin="0,6,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="CalendarCheckOutline" Foreground="{StaticResource OnAccentBrush}" />
+                            <TextBlock Text="Забронювати" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold"
+                                       IsVisible="{Binding !IsEditing}" />
+                            <TextBlock Text="Зберегти зміни" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold"
+                                       IsVisible="{Binding IsEditing}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

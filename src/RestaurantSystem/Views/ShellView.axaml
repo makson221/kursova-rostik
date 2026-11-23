@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RestaurantSystem.ViewModels"
+             xmlns:inf="using:RestaurantSystem.Infrastructure"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.ShellView"
+             x:DataType="vm:ShellViewModel">
+
+    <Grid ColumnDefinitions="252,*">
+
+        <!-- ================= Бічна панель ================= -->
+        <Border Background="{StaticResource RailBrush}" BorderBrush="{StaticResource StrokeSoftBrush}"
+                BorderThickness="0,0,1,0">
+            <DockPanel Margin="18,22,18,18">
+                <!-- Бренд -->
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="6,0,0,34"
+                            inf:WindowDrag.IsDragArea="True" Background="Transparent">
+                    <Image Source="/Assets/logo.png" Width="42" Height="42" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="ВАТРА" FontFamily="{StaticResource DisplayFont}" FontWeight="SemiBold"
+                                   FontSize="20" LetterSpacing="5" />
+                        <TextBlock Text="RESTAURANT OS" Classes="caption" FontSize="9.5" LetterSpacing="2.6" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Користувач -->
+                <Border DockPanel.Dock="Bottom" Background="#1CFFFFFF" CornerRadius="16" Padding="10">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border Width="40" Height="40" CornerRadius="12" Background="{StaticResource FlameBrush}">
+                            <TextBlock Text="{Binding UserInitials}" FontWeight="ExtraBold" FontSize="14"
+                                       Foreground="{StaticResource OnAccentBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="10,0,4,0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding UserName}" FontWeight="Bold" FontSize="13" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding RoleText}" Classes="muted" FontSize="11.5" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Classes="ghost icon small" Command="{Binding LogoutCommand}"
+                                ToolTip.Tip="Завершити зміну">
+                            <mi:MaterialIcon Kind="Logout" Width="17" Height="17" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <StackPanel>
+                    <TextBlock Text="РОБОЧІ РОЗДІЛИ" Classes="caption" Margin="10,0,0,10" />
+                    <ItemsControl ItemsSource="{Binding NavItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:NavItem">
+                                <Button Classes="nav" Classes.active="{Binding IsActive}" Command="{Binding OpenCommand}"
+                                        Height="46">
+                                    <Grid ColumnDefinitions="4,Auto,*">
+                                        <Border Width="4" Height="22" CornerRadius="2" Background="{StaticResource FlameVerticalBrush}"
+                                                IsVisible="{Binding IsActive}" HorizontalAlignment="Left" />
+                                        <Panel Grid.Column="1" Width="36" Margin="10,0,6,0">
+                                            <mi:MaterialIcon Kind="{Binding Icon}" Width="20" Height="20"
+                                                             IsVisible="{Binding !IsActive}" />
+                                            <mi:MaterialIcon Kind="{Binding Icon}" Width="20" Height="20"
+                                                             Foreground="{StaticResource AccentBrush}"
+                                                             IsVisible="{Binding IsActive}" />
+                                        </Panel>
+                                        <TextBlock Grid.Column="2" Text="{Binding Title}" VerticalAlignment="Center"
+                                                   Foreground="{Binding $parent[Button].Foreground}" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ================= Робоча область ================= -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+            <!-- Заголовок сторінки (він же «ручка» вікна) -->
+            <Border inf:WindowDrag.IsDragArea="True" Background="Transparent" Padding="32,26,160,14">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel>
+                        <TextBlock Text="{Binding CurrentPage.Title, FallbackValue=''}" Classes="h1" />
+                        <TextBlock Text="{Binding CurrentPage.Subtitle, FallbackValue=''}" Classes="muted" Margin="0,4,0,0" />
+                    </StackPanel>
+                    <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" CornerRadius="14"
+                            BorderBrush="{StaticResource StrokeSoftBrush}" BorderThickness="1"
+                            Padding="14,8" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <Ellipse Width="8" Height="8" Fill="{StaticResource GreenBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="Зміна триває" Classes="muted small" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding ClockText}" Classes="mono" FontWeight="Bold" FontSize="15"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" Margin="32,6,32,26" />
+        </Grid>
+    </Grid>
+</UserControl>

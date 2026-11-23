@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="using:RestaurantSystem.ViewModels.Dialogs"
+             xmlns:c="using:RestaurantSystem.Controls"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.Dialogs.ReceiptDialogView"
+             x:DataType="d:ReceiptDialogViewModel">
+    <StackPanel Spacing="18" Width="420">
+        <StackPanel HorizontalAlignment="Center" Spacing="6">
+            <Border Width="56" Height="56" CornerRadius="28" Background="{StaticResource GreenSoftBrush}"
+                    HorizontalAlignment="Center">
+                <mi:MaterialIcon Kind="Check" Width="30" Height="30" Foreground="{StaticResource GreenBrush}" />
+            </Border>
+            <TextBlock Text="Оплату прийнято" Classes="h1" HorizontalAlignment="Center" Margin="0,6,0,0" />
+            <TextBlock Text="{Binding TotalText}" Classes="accent" FontWeight="ExtraBold" FontSize="18"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Паперовий чек -->
+        <StackPanel>
+            <c:ZigzagEdge Fill="#F4EADF" PointDown="False" Height="9" />
+            <Border Background="#F4EADF" Padding="22,14">
+                <ScrollViewer MaxHeight="400">
+                    <SelectableTextBlock Text="{Binding ReceiptText}" FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                         Foreground="#2A1F18" LineHeight="18" />
+                </ScrollViewer>
+            </Border>
+            <c:ZigzagEdge Fill="#F4EADF" PointDown="True" Height="9" />
+        </StackPanel>
+
+        <UniformGrid Columns="2">
+            <Button Margin="0,0,6,0" HorizontalAlignment="Stretch" Command="{Binding SaveCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="ContentSaveOutline" />
+                    <TextBlock Text="Зберегти чек" />
+                </StackPanel>
+            </Button>
+            <Button Classes="primary" Margin="6,0,0,0" HorizontalAlignment="Stretch" Command="{Binding DoneCommand}"
+                    IsDefault="True" Content="Готово" />
+        </UniformGrid>
+    </StackPanel>
+</UserControl>

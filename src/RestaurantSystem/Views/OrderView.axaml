@@ -1,0 +1,307 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RestaurantSystem.ViewModels"
+             xmlns:c="using:RestaurantSystem.Controls"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.OrderView"
+             x:DataType="vm:OrderViewModel"
+             Classes="page">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PaperBrush" Color="#F4EADF" />
+        <SolidColorBrush x:Key="InkBrush" Color="#2A1F18" />
+        <SolidColorBrush x:Key="InkMutedBrush" Color="#8A7765" />
+        <SolidColorBrush x:Key="InkLineBrush" Color="#D4C3B1" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- Кнопки на «папері» -->
+        <Style Selector="Button.ink">
+            <Setter Property="Background" Value="#E6D8C8" />
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.ink:pointerover">
+            <Setter Property="Background" Value="#DCCAB6" />
+        </Style>
+        <Style Selector="Button.inkDark">
+            <Setter Property="Background" Value="#2A1F18" />
+            <Setter Property="Foreground" Value="#F4EADF" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.inkDark:pointerover">
+            <Setter Property="Background" Value="#3D2E24" />
+        </Style>
+        <Style Selector="Button.step">
+            <Setter Property="Width" Value="26" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+        <Style Selector="Rectangle.cut">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Stroke" Value="{StaticResource InkLineBrush}" />
+            <Setter Property="StrokeThickness" Value="1.2" />
+            <Setter Property="StrokeDashArray" Value="5,4" />
+        </Style>
+
+        <Style Selector="TextBox.paper">
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+        </Style>
+        <Style Selector="TextBox.paper /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#FFFDF9" />
+            <Setter Property="BorderBrush" Value="{StaticResource InkLineBrush}" />
+        </Style>
+        <Style Selector="TextBox.paper:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#FFFDF9" />
+        </Style>
+        <Style Selector="TextBox.paper:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="#C9621E" />
+        </Style>
+        <Style Selector="TextBox.paper:focus">
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+        </Style>
+
+        <!-- Картка страви -->
+        <Style Selector="Button.dish">
+            <Setter Property="Height" Value="168" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Button.dish:disabled">
+            <Setter Property="Opacity" Value="0.38" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="*,22,410">
+
+        <!-- ================= Меню ================= -->
+        <Grid RowDefinitions="Auto,Auto,*">
+            <Grid ColumnDefinitions="Auto,*">
+                <Button Classes="icon" Command="{Binding BackCommand}" ToolTip.Tip="До плану зали" Width="44" Height="44">
+                    <mi:MaterialIcon Kind="ArrowLeft" Width="20" Height="20" />
+                </Button>
+                <Panel Grid.Column="1" Margin="12,0,0,0">
+                    <TextBox Classes="search" Text="{Binding Search}" Watermark="Пошук страви за назвою…" Height="44" />
+                    <mi:MaterialIcon Kind="Magnify" Foreground="{StaticResource TextDimBrush}" HorizontalAlignment="Left"
+                                     Margin="14,0,0,0" IsHitTestVisible="False" />
+                </Panel>
+            </Grid>
+
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Categories}" Margin="0,14,0,8">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CategoryChip">
+                            <Button Classes="chip" Classes.active="{Binding IsSelected}" Command="{Binding SelectCommand}"
+                                    Padding="12,8" Margin="0,0,8,8">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <mi:MaterialIcon Kind="{Binding Icon}" Foreground="{Binding Tone}" Width="16" Height="16" />
+                                    <TextBlock Text="{Binding Title}" Foreground="{Binding $parent[Button].Foreground}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            <ScrollViewer Grid.Row="2">
+                <ItemsControl ItemsSource="{Binding Dishes}" Margin="0,0,14,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <c:AdaptiveGrid MinItemWidth="186" Spacing="12" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DishCard">
+                            <Button Classes="tile dish" Command="{Binding AddCommand}" IsEnabled="{Binding IsAvailable}"
+                                    ToolTip.Tip="{Binding Dish.Description}">
+                                <Grid RowDefinitions="Auto,*,Auto" Margin="14">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Width="34" Height="34" CornerRadius="11" Background="{Binding ToneSoft}">
+                                            <mi:MaterialIcon Kind="{Binding Icon}" Foreground="{Binding Tone}" Width="18" Height="18" />
+                                        </Border>
+                                        <Border Grid.Column="2" Height="26" MinWidth="26" CornerRadius="13" Padding="7,0"
+                                                Background="{StaticResource FlameBrush}" IsVisible="{Binding InOrder}"
+                                                VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding CountInOrder}" Foreground="{StaticResource OnAccentBrush}"
+                                                       FontWeight="ExtraBold" FontSize="12" HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Column="2" Classes="badge" Background="{StaticResource RedSoftBrush}"
+                                                IsVisible="{Binding !IsAvailable}" VerticalAlignment="Top">
+                                            <TextBlock Text="Стоп" Foreground="{StaticResource RedBrush}" />
+                                        </Border>
+                                    </Grid>
+                                    <StackPanel Grid.Row="1" Margin="0,10,0,0" Spacing="4">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14" TextWrapping="Wrap"
+                                                   MaxLines="2" TextTrimming="CharacterEllipsis" LineHeight="18" />
+                                        <TextBlock Classes="dim small">
+                                            <Run Text="{Binding Portion}" />
+                                            <Run Text="·" />
+                                            <Run Text="{Binding CookTimeText}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+                                        <TextBlock Text="{Binding PriceText}" FontSize="17" FontWeight="ExtraBold"
+                                                   VerticalAlignment="Center" />
+                                        <Border Grid.Column="1" Width="30" Height="30" CornerRadius="15"
+                                                Background="{StaticResource AccentSoftBrush}">
+                                            <mi:MaterialIcon Kind="Plus" Foreground="{StaticResource AccentBrush}" Width="18" Height="18" />
+                                        </Border>
+                                    </Grid>
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ================= Паперовий чек ================= -->
+        <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
+            <c:ZigzagEdge Fill="{StaticResource PaperBrush}" PointDown="False" Height="10" />
+            <Border Grid.Row="1" Background="{StaticResource PaperBrush}" Padding="22,10,22,0">
+                <Grid RowDefinitions="Auto,Auto,Auto,*">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel>
+                            <TextBlock Text="РАХУНОК" FontFamily="{StaticResource MonoFont}" FontWeight="Bold" FontSize="12"
+                                       LetterSpacing="3" Foreground="{StaticResource InkMutedBrush}" />
+                            <TextBlock Text="{Binding Title}" FontFamily="{StaticResource DisplayFont}" FontWeight="SemiBold"
+                                       FontSize="26" Foreground="{StaticResource InkBrush}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                            <TextBlock Text="Гостей" FontSize="11" Foreground="{StaticResource InkMutedBrush}" HorizontalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Button Classes="ink step" Command="{Binding ChangeGuestsCommand}" CommandParameter="-1">
+                                    <mi:MaterialIcon Kind="Minus" Width="14" Height="14" />
+                                </Button>
+                                <TextBlock Text="{Binding Order.GuestsCount, FallbackValue=1}" FontWeight="ExtraBold" FontSize="16"
+                                           Foreground="{StaticResource InkBrush}" VerticalAlignment="Center" MinWidth="18"
+                                           TextAlignment="Center" />
+                                <Button Classes="ink step" Command="{Binding ChangeGuestsCommand}" CommandParameter="1">
+                                    <mi:MaterialIcon Kind="Plus" Width="14" Height="14" />
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Grid.Row="1" Text="{Binding Subtitle}" FontSize="12" Foreground="{StaticResource InkMutedBrush}"
+                               TextWrapping="Wrap" Margin="0,4,0,0" />
+                    <Rectangle Grid.Row="2" Classes="cut" Margin="0,14,0,4" />
+
+                    <!-- Порожній чек -->
+                    <StackPanel Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10"
+                                IsVisible="{Binding IsEmpty}">
+                        <mi:MaterialIcon Kind="ReceiptTextPlusOutline" Width="42" Height="42" Foreground="#C9B6A2" />
+                        <TextBlock Text="Чек порожній" FontWeight="Bold" Foreground="{StaticResource InkBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Натисніть на страву зліва, щоб додати її" FontSize="12"
+                                   Foreground="{StaticResource InkMutedBrush}" HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="3" IsVisible="{Binding HasLines}">
+                        <ItemsControl ItemsSource="{Binding Lines}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OrderLine">
+                                    <StackPanel Margin="0,10,0,6">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Spacing="3">
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"
+                                                           Foreground="{StaticResource InkBrush}" TextWrapping="Wrap" />
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Border CornerRadius="6" Padding="6,1" Background="{Binding StatusSoft}">
+                                                        <TextBlock Text="{Binding StatusText}" Foreground="{Binding StatusTone}"
+                                                                   FontSize="10.5" FontWeight="Bold" />
+                                                    </Border>
+                                                    <TextBlock Text="{Binding PriceText}" FontFamily="{StaticResource MonoFont}" FontSize="11.5"
+                                                               Foreground="{StaticResource InkMutedBrush}" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Spacing="5" IsVisible="{Binding HasNote}">
+                                                    <mi:MaterialIcon Kind="CommentTextOutline" Width="13" Height="13"
+                                                                     Foreground="#B8662E" />
+                                                    <TextBlock Text="{Binding Note}" FontStyle="Italic" FontSize="12"
+                                                               Foreground="#B8662E" TextWrapping="Wrap" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding TotalText}" FontFamily="{StaticResource MonoFont}"
+                                                       FontWeight="Bold" FontSize="14" Foreground="{StaticResource InkBrush}"
+                                                       VerticalAlignment="Top" Margin="10,0,0,0" />
+                                        </Grid>
+
+                                        <!-- Керування чернеткою -->
+                                        <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,8,0,0" IsVisible="{Binding IsDraft}">
+                                            <Button Classes="ink step" Command="{Binding DecreaseCommand}">
+                                                <mi:MaterialIcon Kind="Minus" Width="14" Height="14" />
+                                            </Button>
+                                            <TextBlock Text="{Binding Quantity}" FontWeight="ExtraBold" Foreground="{StaticResource InkBrush}"
+                                                       VerticalAlignment="Center" MinWidth="20" TextAlignment="Center" />
+                                            <Button Classes="ink step" Command="{Binding IncreaseCommand}">
+                                                <mi:MaterialIcon Kind="Plus" Width="14" Height="14" />
+                                            </Button>
+                                            <Button Classes="ink step" Command="{Binding ToggleNoteCommand}" Margin="6,0,0,0"
+                                                    ToolTip.Tip="Коментар для кухні">
+                                                <mi:MaterialIcon Kind="CommentEditOutline" Width="14" Height="14" />
+                                            </Button>
+                                            <Button Classes="ink step" Command="{Binding RemoveCommand}" ToolTip.Tip="Прибрати">
+                                                <mi:MaterialIcon Kind="TrashCanOutline" Width="14" Height="14" />
+                                            </Button>
+                                        </StackPanel>
+                                        <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0" IsVisible="{Binding IsEditingNote}">
+                                            <TextBox Classes="paper" Text="{Binding NoteDraft}" Watermark="Напр.: без цибулі, соус окремо"
+                                                     MinHeight="34" Padding="10,6" FontSize="12.5" />
+                                            <Button Grid.Column="1" Classes="inkDark" Content="OK" Margin="6,0,0,0" Padding="12,6"
+                                                    Command="{Binding SaveNoteCommand}" />
+                                        </Grid>
+                                        <Rectangle Classes="cut" Margin="0,12,0,0" Opacity="0.6" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- Підсумок та дії -->
+            <StackPanel Grid.Row="2">
+                <Border Background="{StaticResource PaperBrush}" Padding="22,6,22,18">
+                    <StackPanel Spacing="12">
+                        <Rectangle Classes="cut" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel>
+                                <TextBlock Text="РАЗОМ" FontFamily="{StaticResource MonoFont}" FontWeight="Bold" FontSize="12"
+                                           LetterSpacing="3" Foreground="{StaticResource InkMutedBrush}" />
+                                <TextBlock Text="{Binding ItemsCountText}" FontSize="12" Foreground="{StaticResource InkMutedBrush}" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding SubtotalText}" FontFamily="{StaticResource MonoFont}"
+                                       FontWeight="Bold" FontSize="26" Foreground="{StaticResource InkBrush}"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <Button Classes="primary" Height="48" HorizontalAlignment="Stretch"
+                                Command="{Binding SendToKitchenCommand}" IsEnabled="{Binding HasDrafts}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <mi:MaterialIcon Kind="ChefHat" Foreground="{StaticResource OnAccentBrush}" />
+                                <TextBlock Text="{Binding SendText}" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold" />
+                            </StackPanel>
+                        </Button>
+                        <Grid ColumnDefinitions="*,8,Auto">
+                            <Button Classes="inkDark" Height="46" HorizontalAlignment="Stretch" Command="{Binding PayCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <mi:MaterialIcon Kind="CashRegister" />
+                                    <TextBlock Text="Розрахувати" Foreground="{Binding $parent[Button].Foreground}" FontWeight="Bold" />
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Column="2" Classes="ink" Height="46" Width="46" Padding="0"
+                                    Command="{Binding CancelOrderCommand}" ToolTip.Tip="Скасувати замовлення">
+                                <mi:MaterialIcon Kind="CloseCircleOutline" Width="20" Height="20" />
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <c:ZigzagEdge Fill="{StaticResource PaperBrush}" PointDown="True" Height="10" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

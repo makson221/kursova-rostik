@@ -1,0 +1,42 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:RestaurantSystem"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.App"
+             RequestedThemeVariant="Dark"
+             Name="Ватра · Restaurant OS">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://RestaurantSystem/Styles/Palette.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark"
+                                       Accent="#F2A65A"
+                                       AltHigh="#110E0C" AltLow="#110E0C" AltMedium="#110E0C"
+                                       AltMediumHigh="#110E0C" AltMediumLow="#110E0C"
+                                       BaseHigh="#F6EEE6" BaseLow="#3A3029" BaseMedium="#A89A8D"
+                                       BaseMediumHigh="#CFC3B8" BaseMediumLow="#74675C"
+                                       ChromeAltLow="#CFC3B8" ChromeBlackHigh="#000000" ChromeBlackLow="#CFC3B8"
+                                       ChromeBlackMedium="#000000" ChromeBlackMediumLow="#000000"
+                                       ChromeDisabledHigh="#3A3029" ChromeDisabledLow="#74675C"
+                                       ChromeGray="#A89A8D" ChromeHigh="#4A3E35" ChromeLow="#1F1A16"
+                                       ChromeMedium="#27211C" ChromeMediumLow="#2E2721" ChromeWhite="#FFFFFF"
+                                       ErrorText="#EF6B5E" ListLow="#27211C" ListMedium="#3A3029"
+                                       RegionColor="#171310" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+        <materialIcons:MaterialIconStyles />
+        <StyleInclude Source="avares://RestaurantSystem/Styles/Controls.axaml" />
+    </Application.Styles>
+</Application>

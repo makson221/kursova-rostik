@@ -1,0 +1,364 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RestaurantSystem.ViewModels"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.HallView"
+             x:DataType="vm:HallViewModel"
+             Classes="page">
+
+    <UserControl.Styles>
+        <!-- Стіл на плані -->
+        <Style Selector="Button.table">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Button.table:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="RenderTransform" Value="scale(1.04)" />
+        </Style>
+        <Style Selector="Button.table.dimmed">
+            <Setter Property="Opacity" Value="0.18" />
+        </Style>
+
+        <Style Selector="Button.table Border.top">
+            <Setter Property="Background" Value="#2A231D" />
+            <Setter Property="BorderBrush" Value="#54463B" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.table Border.chair">
+            <Setter Property="Background" Value="#3D332B" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+        <Style Selector="Button.table TextBlock.num">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+        <Style Selector="Button.table TextBlock.sub">
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+        </Style>
+
+        <Style Selector="Button.table.occupied Border.top">
+            <Setter Property="Background" Value="{StaticResource FlameBrush}" />
+            <Setter Property="BorderBrush" Value="#FFD9A0" />
+            <Setter Property="BoxShadow" Value="0 8 30 0 #55F2873F" />
+        </Style>
+        <Style Selector="Button.table.occupied Border.chair">
+            <Setter Property="Background" Value="#B8743E" />
+        </Style>
+        <Style Selector="Button.table.occupied TextBlock.num">
+            <Setter Property="Foreground" Value="{StaticResource OnAccentBrush}" />
+        </Style>
+        <Style Selector="Button.table.occupied TextBlock.sub">
+            <Setter Property="Foreground" Value="#5A3415" />
+        </Style>
+
+        <Style Selector="Button.table.reserved Border.top">
+            <Setter Property="Background" Value="#1C2737" />
+            <Setter Property="BorderBrush" Value="{StaticResource BlueBrush}" />
+        </Style>
+        <Style Selector="Button.table.reserved Border.chair">
+            <Setter Property="Background" Value="#3B5679" />
+        </Style>
+        <Style Selector="Button.table.reserved TextBlock.sub">
+            <Setter Property="Foreground" Value="{StaticResource BlueBrush}" />
+        </Style>
+
+        <Style Selector="Button.table.selected Border.top">
+            <Setter Property="BoxShadow" Value="0 0 0 4 #F6EEE6" />
+        </Style>
+
+        <!-- Зони плану -->
+        <Style Selector="Rectangle.zone">
+            <Setter Property="Stroke" Value="#3B3129" />
+            <Setter Property="StrokeThickness" Value="1.5" />
+            <Setter Property="StrokeDashArray" Value="4,4" />
+            <Setter Property="RadiusX" Value="22" />
+            <Setter Property="RadiusY" Value="22" />
+            <Setter Property="Fill" Value="#0CFFFFFF" />
+        </Style>
+        <Style Selector="TextBlock.zoneLabel">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="LetterSpacing" Value="2" />
+            <Setter Property="Foreground" Value="#6B5E53" />
+        </Style>
+
+        <Style Selector="Border.legendDot">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="*,18,330">
+
+        <!-- ================= План ================= -->
+        <Border Classes="card" Padding="20,18">
+            <Grid RowDefinitions="Auto,*">
+                <Grid ColumnDefinitions="*,Auto">
+                    <ItemsControl ItemsSource="{Binding Zones}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ZoneFilter">
+                                <Button Classes="chip" Classes.active="{Binding IsSelected}" Content="{Binding Title}"
+                                        Command="{Binding SelectCommand}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="18" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Classes="legendDot" Background="#2A231D" BorderBrush="#54463B" BorderThickness="1.5" />
+                            <TextBlock Text="Вільний" Classes="muted small" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Classes="legendDot" Background="{StaticResource FlameBrush}" />
+                            <TextBlock Text="Зайнятий" Classes="muted small" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Classes="legendDot" Background="#1C2737" BorderBrush="{StaticResource BlueBrush}" BorderThickness="1.5" />
+                            <TextBlock Text="Бронь" Classes="muted small" />
+                        </StackPanel>
+                        <Button Classes="ghost icon small" Command="{Binding RefreshCommand}" ToolTip.Tip="Оновити">
+                            <mi:MaterialIcon Kind="Refresh" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Viewbox Grid.Row="1" Stretch="Uniform" Margin="0,16,0,0">
+                    <Panel Width="940" Height="720">
+                        <!-- Підкладка: клік по порожньому місцю знімає вибір -->
+                        <Button Classes="table" Command="{Binding ClearSelectionCommand}" Cursor="Arrow">
+                            <Border Background="Transparent" />
+                        </Button>
+
+                        <Canvas IsHitTestVisible="False">
+                            <Rectangle Classes="zone" Canvas.Left="20" Canvas.Top="20" Width="580" Height="680" />
+                            <TextBlock Classes="zoneLabel" Canvas.Left="44" Canvas.Top="38" Text="ОСНОВНА ЗАЛА" />
+
+                            <Rectangle Classes="zone" Canvas.Left="620" Canvas.Top="20" Width="300" Height="340"
+                                       Fill="#0C6FCF97" />
+                            <TextBlock Classes="zoneLabel" Canvas.Left="644" Canvas.Top="38" Text="ТЕРАСА" />
+
+                            <Rectangle Classes="zone" Canvas.Left="620" Canvas.Top="380" Width="300" Height="320"
+                                       Fill="#0EB794F6" />
+                            <TextBlock Classes="zoneLabel" Canvas.Left="644" Canvas.Top="398" Text="VIP-КІМНАТА" />
+
+                            <!-- Барна стійка з табуретами -->
+                            <Border Canvas.Left="250" Canvas.Top="640" Width="320" Height="30" CornerRadius="15"
+                                    Background="#2E251F" BorderBrush="#4A3C31" BorderThickness="1">
+                                <TextBlock Text="БАР" Classes="zoneLabel" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           FontSize="10" />
+                            </Border>
+                            <Ellipse Canvas.Left="285" Canvas.Top="612" Width="16" Height="16" Fill="#3D332B" />
+                            <Ellipse Canvas.Left="335" Canvas.Top="612" Width="16" Height="16" Fill="#3D332B" />
+                            <Ellipse Canvas.Left="385" Canvas.Top="612" Width="16" Height="16" Fill="#3D332B" />
+                            <Ellipse Canvas.Left="435" Canvas.Top="612" Width="16" Height="16" Fill="#3D332B" />
+                            <Ellipse Canvas.Left="485" Canvas.Top="612" Width="16" Height="16" Fill="#3D332B" />
+                            <Ellipse Canvas.Left="535" Canvas.Top="612" Width="16" Height="16" Fill="#3D332B" />
+
+                            <!-- Вхід -->
+                            <Border Canvas.Left="60" Canvas.Top="692" Width="110" Height="16" Background="{StaticResource Bg1Brush}" />
+                            <StackPanel Canvas.Left="70" Canvas.Top="650" Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="DoorOpen" Width="20" Height="20" Foreground="#6B5E53" />
+                                <TextBlock Classes="zoneLabel" Text="ВХІД" VerticalAlignment="Center" />
+                            </StackPanel>
+
+                            <!-- Вікна -->
+                            <Rectangle Canvas.Left="70" Canvas.Top="17" Width="200" Height="6" RadiusX="3" RadiusY="3" Fill="#3A5679" />
+                            <Rectangle Canvas.Left="330" Canvas.Top="17" Width="200" Height="6" RadiusX="3" RadiusY="3" Fill="#3A5679" />
+                            <Rectangle Canvas.Left="17" Canvas.Top="90" Width="6" Height="200" RadiusX="3" RadiusY="3" Fill="#3A5679" />
+                            <Rectangle Canvas.Left="17" Canvas.Top="380" Width="6" Height="180" RadiusX="3" RadiusY="3" Fill="#3A5679" />
+                            <Rectangle Canvas.Left="917" Canvas.Top="60" Width="6" Height="260" RadiusX="3" RadiusY="3" Fill="#3A6F57" />
+                        </Canvas>
+
+                        <ItemsControl ItemsSource="{Binding Tables}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.Styles>
+                                <Style Selector="ContentPresenter" x:DataType="vm:TableItemViewModel">
+                                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                </Style>
+                            </ItemsControl.Styles>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TableItemViewModel">
+                                    <Button Classes="table"
+                                            Classes.occupied="{Binding IsOccupied}"
+                                            Classes.reserved="{Binding IsReserved}"
+                                            Classes.selected="{Binding IsSelected}"
+                                            Classes.dimmed="{Binding IsDimmed}"
+                                            Width="{Binding Width}" Height="{Binding Height}"
+                                            Command="{Binding SelectCommand}">
+                                        <Panel>
+                                            <ItemsControl ItemsSource="{Binding Chairs}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.Styles>
+                                                    <Style Selector="ContentPresenter" x:DataType="vm:ChairShape">
+                                                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                                    </Style>
+                                                </ItemsControl.Styles>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:ChairShape">
+                                                        <Border Classes="chair" Width="{Binding Width}" Height="{Binding Height}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <Border Classes="top" Width="{Binding TableWidth}" Height="{Binding TableHeight}"
+                                                    CornerRadius="{Binding CornerRadius}"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0">
+                                                    <TextBlock Classes="num" Text="{Binding Number}" FontSize="22" FontWeight="ExtraBold"
+                                                               HorizontalAlignment="Center" />
+                                                    <TextBlock Classes="sub" Text="{Binding Line1}" FontSize="10.5" FontWeight="Bold"
+                                                               HorizontalAlignment="Center" />
+                                                    <TextBlock Classes="sub" Text="{Binding Line2}" FontSize="9.5"
+                                                               HorizontalAlignment="Center" IsVisible="{Binding !IsFree}" />
+                                                </StackPanel>
+                                            </Border>
+                                        </Panel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Panel>
+                </Viewbox>
+            </Grid>
+        </Border>
+
+        <!-- ================= Бічна панель ================= -->
+        <StackPanel Grid.Column="2" Spacing="16">
+            <!-- Статистика -->
+            <Border Classes="card glow">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="ЗАРАЗ У ЗАЛІ" Classes="caption" />
+                    <TextBlock Text="{Binding GuestsText}" FontSize="30" FontWeight="ExtraBold" />
+                    <UniformGrid Columns="3">
+                        <StackPanel>
+                            <TextBlock Text="{Binding FreeCount}" FontSize="20" FontWeight="Bold" />
+                            <TextBlock Text="вільних" Classes="muted small" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{Binding OccupiedCount}" FontSize="20" FontWeight="Bold" Classes="accent" />
+                            <TextBlock Text="зайнятих" Classes="muted small" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{Binding ReservedCount}" FontSize="20" FontWeight="Bold"
+                                       Foreground="{StaticResource BlueBrush}" />
+                            <TextBlock Text="у броні" Classes="muted small" />
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- Підказка, коли стіл не вибрано -->
+            <Border Classes="card" IsVisible="{Binding !HasSelection}" Padding="24,30">
+                <StackPanel Spacing="12" HorizontalAlignment="Center">
+                    <Border Width="64" Height="64" CornerRadius="20" Background="{StaticResource AccentSoftBrush}"
+                            HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="GestureTapButton" Width="30" Height="30" Foreground="{StaticResource AccentBrush}" />
+                    </Border>
+                    <TextBlock Text="Оберіть стіл" Classes="h2" HorizontalAlignment="Center" />
+                    <TextBlock Text="Натисніть на стіл на плані, щоб побачити деталі. Повторне натискання відкриває рахунок."
+                               Classes="muted" TextAlignment="Center" TextWrapping="Wrap" LineHeight="20" />
+                </StackPanel>
+            </Border>
+
+            <!-- Деталі столу -->
+            <Border Classes="card" IsVisible="{Binding HasSelection}">
+                <StackPanel Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel>
+                            <TextBlock Text="{Binding SelectedTitle}" Classes="h1" />
+                            <TextBlock Text="{Binding SelectedSubtitle}" Classes="muted" Margin="0,3,0,0" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="ghost icon small" Command="{Binding ClearSelectionCommand}"
+                                VerticalAlignment="Top">
+                            <mi:MaterialIcon Kind="Close" />
+                        </Button>
+                    </Grid>
+
+                    <Border Classes="badge" Background="{StaticResource AccentSoftBrush}"
+                            IsVisible="{Binding SelectedHasOrder}">
+                        <TextBlock Text="Зайнятий" Foreground="{StaticResource AccentBrush}" />
+                    </Border>
+
+                    <!-- Відкритий рахунок -->
+                    <Border Classes="panel" IsVisible="{Binding SelectedHasOrder}">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" >
+                            <Grid.Styles>
+                                <Style Selector="TextBlock">
+                                    <Setter Property="Margin" Value="0,4" />
+                                </Style>
+                            </Grid.Styles>
+                            <TextBlock Text="Офіціант" Classes="muted" />
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedWaiter}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                            <TextBlock Grid.Row="1" Text="Гостей" Classes="muted" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedGuests}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                            <TextBlock Grid.Row="2" Text="Відкрито" Classes="muted" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedOpened}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                            <TextBlock Grid.Row="3" Text="У чеку" Classes="muted" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedItems}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Border>
+                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding SelectedHasOrder}">
+                        <TextBlock Text="Сума рахунку" Classes="muted" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding SelectedTotal}" FontSize="24" FontWeight="ExtraBold" Classes="accent" />
+                    </Grid>
+
+                    <!-- Бронювання -->
+                    <Border Background="{StaticResource BlueSoftBrush}" CornerRadius="14" Padding="14"
+                            IsVisible="{Binding SelectedHasReservation}">
+                        <StackPanel Spacing="6">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <mi:MaterialIcon Kind="CalendarClock" Foreground="{StaticResource BlueBrush}" />
+                                <TextBlock Text="Заброньовано" Foreground="{StaticResource BlueBrush}" FontWeight="Bold" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding SelectedReservation}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding SelectedReservationNote}" Classes="muted small" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button Classes="primary" Height="48" HorizontalAlignment="Stretch" Command="{Binding OpenOrderCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <mi:MaterialIcon Kind="ReceiptTextOutline" Foreground="{StaticResource OnAccentBrush}" />
+                            <TextBlock Text="Відкрити рахунок" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold"
+                                       IsVisible="{Binding SelectedHasOrder}" />
+                            <TextBlock Text="Нове замовлення" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold"
+                                       IsVisible="{Binding SelectedCanOpen}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="soft" HorizontalAlignment="Stretch" Command="{Binding GuestsArrivedCommand}"
+                            IsVisible="{Binding SelectedHasReservation}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="AccountCheckOutline" />
+                            <TextBlock Text="Гості з броні прийшли" Foreground="{Binding $parent[Button].Foreground}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

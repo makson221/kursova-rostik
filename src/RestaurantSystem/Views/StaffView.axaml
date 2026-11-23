@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RestaurantSystem.ViewModels"
+             xmlns:c="using:RestaurantSystem.Controls"
+             xmlns:mi="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="RestaurantSystem.Views.StaffView"
+             x:DataType="vm:StaffViewModel"
+             Classes="page">
+
+    <UserControl.Styles>
+        <Style Selector="Button.person">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="*,18,360">
+        <Grid RowDefinitions="Auto,*">
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Classes="badge" Padding="14,8" Background="{StaticResource SurfaceBrush}">
+                        <TextBlock FontSize="12.5">
+                            <Run Text="Активних:" Foreground="{StaticResource TextMutedBrush}" />
+                            <Run Text="{Binding ActiveCount}" />
+                        </TextBlock>
+                    </Border>
+                    <Border Classes="badge" Padding="14,8" Background="{StaticResource BlueSoftBrush}">
+                        <TextBlock FontSize="12.5" Foreground="{StaticResource BlueBrush}">
+                            <Run Text="Офіціантів:" />
+                            <Run Text="{Binding WaitersCount}" />
+                        </TextBlock>
+                    </Border>
+                    <Border Classes="badge" Padding="14,8" Background="{StaticResource GreenSoftBrush}">
+                        <TextBlock FontSize="12.5" Foreground="{StaticResource GreenBrush}">
+                            <Run Text="Кухарів:" />
+                            <Run Text="{Binding CooksCount}" />
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+                <Button Grid.Column="1" Classes="primary" Command="{Binding NewCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <mi:MaterialIcon Kind="AccountPlusOutline" Foreground="{StaticResource OnAccentBrush}" />
+                        <TextBlock Text="Новий працівник" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding Cards}" Margin="0,0,14,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <c:AdaptiveGrid MinItemWidth="250" Spacing="14" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:EmployeeCard">
+                            <Button Classes="tile person" Classes.selected="{Binding IsSelected}" Command="{Binding SelectCommand}">
+                                <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="18" Opacity="{Binding CardOpacity}">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Width="54" Height="54" CornerRadius="17" Background="{Binding AvatarBrush}">
+                                            <TextBlock Text="{Binding Initials}" FontWeight="ExtraBold" FontSize="18"
+                                                       Foreground="{StaticResource OnAccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Column="2" Classes="badge" Background="{Binding RoleSoft}" VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding RoleText}" Foreground="{Binding RoleTone}" />
+                                        </Border>
+                                    </Grid>
+                                    <StackPanel Grid.Row="1" Margin="0,14,0,0" Spacing="2">
+                                        <TextBlock Text="{Binding FullName}" FontWeight="Bold" FontSize="15.5" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Login}" Classes="mono dim" FontSize="12" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Margin="0,10,0,0" Spacing="5" VerticalAlignment="Top">
+                                        <StackPanel Orientation="Horizontal" Spacing="7">
+                                            <mi:MaterialIcon Kind="PhoneOutline" Width="14" Height="14" Foreground="{StaticResource TextDimBrush}" />
+                                            <TextBlock Text="{Binding Phone}" Classes="muted small" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="7">
+                                            <mi:MaterialIcon Kind="CalendarStarOutline" Width="14" Height="14" Foreground="{StaticResource TextDimBrush}" />
+                                            <TextBlock Text="{Binding TenureText}" Classes="muted small" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <Border Grid.Row="4" Classes="panel" Padding="10,7" Margin="0,12,0,0" IsVisible="{Binding HasStats}">
+                                        <StackPanel Orientation="Horizontal" Spacing="7">
+                                            <mi:MaterialIcon Kind="TrendingUp" Width="15" Height="15" Foreground="{StaticResource AccentBrush}" />
+                                            <TextBlock Text="{Binding StatsText}" FontSize="12" FontWeight="SemiBold" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Row="4" Classes="badge" Background="{StaticResource RedSoftBrush}" Margin="0,12,0,0"
+                                            IsVisible="{Binding IsInactive}">
+                                        <TextBlock Text="Заблоковано" Foreground="{StaticResource RedBrush}" />
+                                    </Border>
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ================= Форма ================= -->
+        <Border Grid.Column="2" Classes="card" Padding="22,20">
+            <ScrollViewer>
+                <StackPanel Spacing="14">
+                    <StackPanel>
+                        <TextBlock Text="{Binding FormTitle}" Classes="h2" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="Обліковий запис працівника" Classes="dim small" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="ПІБ" Classes="label" />
+                        <TextBox Text="{Binding FullName}" Watermark="Прізвище та ім'я" />
+                    </StackPanel>
+                    <Grid ColumnDefinitions="0.8*,10,*">
+                        <StackPanel>
+                            <TextBlock Text="Логін" Classes="label" />
+                            <TextBox Text="{Binding Login}" Watermark="login" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Роль" Classes="label" />
+                            <ComboBox ItemsSource="{Binding Roles}" SelectedItem="{Binding Role}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:RoleOption">
+                                        <TextBlock Text="{Binding Title}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel>
+                        <TextBlock Text="Телефон" Classes="label" />
+                        <TextBox Text="{Binding Phone}" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="{Binding PasswordHint}" Classes="label" TextWrapping="Wrap" />
+                        <TextBox Text="{Binding Password}" PasswordChar="●" Watermark="••••" />
+                    </StackPanel>
+                    <ToggleSwitch IsChecked="{Binding IsActive}" OnContent="Доступ до системи дозволено"
+                                  OffContent="Обліковий запис заблоковано" />
+                    <Border Classes="panel" Padding="12,10">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <mi:MaterialIcon Kind="ShieldLockOutline" Foreground="{StaticResource AccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Паролі зберігаються лише як хеш PBKDF2-SHA256 із сіллю"
+                                       Classes="muted small" Margin="8,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </Grid>
+                    </Border>
+                    <Button Classes="primary" Height="46" HorizontalAlignment="Stretch" Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="ContentSaveOutline" Foreground="{StaticResource OnAccentBrush}" />
+                            <TextBlock Text="Зберегти" Foreground="{StaticResource OnAccentBrush}" FontWeight="Bold" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
